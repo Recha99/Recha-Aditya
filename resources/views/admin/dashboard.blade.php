@@ -101,7 +101,7 @@
                         <tr>
                             <td class="small text-muted">{{ $log->created_at->diffForHumans() }}</td>
                             <td>
-                                <span class="fw-bold">{{ $log->user->name }}</span>
+                                <span class="fw-bold">{{ $log->user->name }} </span>
                                 <br>
                                 <span class="badge bg-secondary" style="font-size: 0.7em">{{ucfirst($log->user->role) }}</span>
                             </td>

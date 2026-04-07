@@ -20,7 +20,7 @@ class AdminController extends Controller
         $totalUser = User::count();
         $totalAlat = tools::count(); // Jumlah jenis alat
         $totalStok = tools::sum('stock'); // Total fisik seluruh alat
-        $totalKategori = Category::count();
+        $totalKategori = category::count();
 
 
 
@@ -28,7 +28,7 @@ class AdminController extends Controller
         $sedangDipinjam = Loan::where('status', 'disetujui')->count();
         $sudahDikembalikan = Loan::where('status', 'kembali')->count();
         // Mengambil 5 log aktivitas terbaru
-        $recentLogs = ActivityLog::with('User')->latest()->take(5)->get();
+        $recentLogs = ActivityLog::latest()->take(5)->get();
         return view('admin.dashboard', compact(
             'totalUser',
             'totalAlat',

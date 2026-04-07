@@ -6,10 +6,10 @@ use Illuminate\Support\Facades\Auth;
 
 class ActivityLog extends Model
 {
-    protected $guarded = [];
+    protected $fillable = ['user_id', 'action', 'description'];
 
     public function user() {
-        return $this->belongTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
     //fungsi Helper

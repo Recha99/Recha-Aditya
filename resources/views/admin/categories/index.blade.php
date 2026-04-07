@@ -6,7 +6,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3>Kelola Kategori Alat</h3>
             <a href="{{ route('categories.create') }}" class="btn btn-primary">
-                + Tambah Kategori
+                <i class="bi bi-plus-lg"></i> Tambah Kategori
             </a>
         </div>
 
