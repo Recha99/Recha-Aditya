@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id();
         $table->string('nama_alat');
         $table->text('deskripsi')->nullable();
-        $table->foreignId('id_kategori')->constrained('categories')->onDelete('cascade');
+        $table->foreignId('id_kategori')->constrained('categories');
         $table->integer('stock'); //jumlah alat yang tersedia
         $table->text('gambar')->nullable();
         $table->timestamps();

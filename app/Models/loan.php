@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class loan extends Model
 {
-    
+
     protected $guarded = [];
         public function user()
             {
@@ -17,7 +17,7 @@ class loan extends Model
             }
         public function tool()
             {
-                return $this->belongsTo(Tool::class, 'tool_id');
+                return $this->belongsTo(tools::class, 'tool_id');
             }
         public function petugas()
             {

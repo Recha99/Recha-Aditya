@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
        // Admin
-        User::factory()->create([
+        User::Create([
             'name' => 'Admin Utama',
             'email' => 'admin@example.com',
             'password' => bcrypt('password'),
@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Petugas
-        User::factory()->create([
+        User::Create([
             'name' => 'Petugas Lab',
             'email' => 'petugas@example.com',
             'password' => bcrypt('password'),
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Peminjam
-        User::factory()->create([
+        User::Create([
             'name' => 'Siswa 1',
             'email' => 'user@example.com',
             'password' => bcrypt('password'),

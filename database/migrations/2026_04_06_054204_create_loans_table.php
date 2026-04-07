@@ -18,9 +18,9 @@ return new class extends Migration
             $table->date('tanggal_pinjam');
             $table->date('tanggal_kembali_rencana');
             $table->date('tanggal_kembali_aktual')->nullable();
-                //status: pending, approved, rejected, returned
-            $table->enum('status', ['pending', 'approved', 'rejected', 'returned'])->default('pending');
-            $table->foreignId('petugas_id')->nullable()->constrained('users');
+                //status: pending, disetujui, ditolak, kembali
+            $table->enum('status', ['pending', 'disetujui', 'ditolak', 'kembali'])->default('pending');
+            $table->foreignId('petugas_id')->nullable()->constrained('users'); // Siapa yang menyetujui atau menolak pinjaman
             $table->timestamps();
     });
     }

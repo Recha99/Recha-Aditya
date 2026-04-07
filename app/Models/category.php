@@ -12,6 +12,6 @@ class category extends Model
     protected $guarded = [];
     public function tools()
     {
-        return $this->belongsTo(Tool::class);
+        return $this->belongsTo(tools::class);
     }
 }
