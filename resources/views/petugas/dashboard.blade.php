@@ -11,6 +11,7 @@
                 <tr>
                     <th>Peminjam</th>
                     <th>Alat</th>
+                    <th>Jumlah</th>
                     <th>Tgl Pinjam</th>
                     <th>Rencana Kembali</th>
                     <th>Aksi</th>
@@ -21,14 +22,18 @@
                 <tr>
                     <td>{{ $loan->user->name }}</td>
                     <td>{{ $loan->tool->nama_alat }}</td>
+                    <td>{{ $loan->jumlah ?? 1 }}</td>
                     <td>{{ $loan->tanggal_pinjam }}</td>
                     <td>{{ $loan->tanggal_kembali_rencana }}</td>
                     <td>
-                        <form action="{{ url('/petugas/approve/'.$loan->id) }}" method="POST" class="dinline">
+                        <form action="{{ url('/petugas/approve/'.$loan->id) }}" method="POST" class="d-inline">
                             @csrf
                             <button class="btn btn-success btn-sm">Setujui</button>
                         </form>
-                        <button class="btn btn-danger btn-sm">Tolak</button>
+                        <form action="{{ url('/petugas/reject/'.$loan->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Tolak permintaan peminjaman ini?');">
+                            @csrf
+                            <button class="btn btn-danger btn-sm">Tolak</button>
+                        </form>
                     </td>
                 </tr>
                 @empty
@@ -48,6 +53,7 @@
                 <tr>
                     <th>Peminjam</th>
                     <th>Alat</th>
+                    <th>Jumlah</th>
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
@@ -57,6 +63,7 @@
                 <tr>
                     <td>{{ $active->user->name }}</td>
                     <td>{{ $active->tool->nama_alat }}</td>
+                    <td>{{ $active->jumlah ?? 1 }}</td>
                     <td><span class="badge bg-primary">{{ $active->status }}</span></td>
                     <td>
                         <form action="{{ url('/petugas/return/'.$active->id) }}" method="POST">

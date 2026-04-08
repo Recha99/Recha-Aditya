@@ -25,7 +25,7 @@ class AdminLoanController extends Controller
         // Ambil user yang rolenya peminjam saja
         $users = User::where('role', 'peminjam')->get();
         // Ambil semua alat
-        $tools = Tools::all();
+        $tools = tools::all();
 
         return view('admin.loans.create', compact('users', 'tools'));
     }
@@ -36,6 +36,7 @@ class AdminLoanController extends Controller
         $request->validate([
             'user_id' => 'required',
             'tool_id' => 'required',
+            'jumlah' => 'required|integer|min:1',
             'tanggal_pinjam' => 'required|date',
             'tanggal_kembali_rencana' => 'required|date|after_or_equal:tanggal_pinjam',
             'status' => 'required'
@@ -43,14 +44,14 @@ class AdminLoanController extends Controller
 
         // Cek stok jika status langsung disetujui
         $tool = tools::findOrFail($request->tool_id);
-        if ($request->status == 'disetujui' && $tool->stok < 1)
-            {
-             return back()->with('error', 'Stok alat kosong, tidak bisa set status Disetujui.');
-            }
+        if ($request->status == 'disetujui' && $tool->stok < $request->jumlah) {
+            return back()->with('error', 'Stok alat tidak cukup untuk jumlah yang diminta.');
+        }
 
         Loan::create([
             'user_id' => $request->user_id,
             'tool_id' => $request->tool_id,
+            'jumlah' => $request->jumlah,
             'tanggal_pinjam' => $request->tanggal_pinjam,
             'tanggal_kembali_rencana' => $request->tanggal_kembali_rencana,
             'status' => $request->status,
@@ -64,8 +65,7 @@ class AdminLoanController extends Controller
 
         ActivityLog::record('Create Loan', 'Admin membuat data pinjaman baru');
 
-        return redirect()->route('admin.loans.index')->with('success', 'Data peminjaman berhasil
-dibuat.');
+        return redirect()->route('admin.loans.index')->with('success', 'Data peminjaman berhasil dibuat.');
     }
 
     // EDIT: Form edit
@@ -73,7 +73,7 @@ dibuat.');
     {
         $loan = Loan::findOrFail($id);
         $users = User::where('role', 'peminjam')->get();
-        $tools = Tools::all();
+        $tools = tools::all();
 
         return view('admin.loans.edit', compact('loan', 'users', 'tools'));
     }
@@ -82,26 +82,27 @@ dibuat.');
     public function update(Request $request, $id)
     {
         $loan = Loan::findOrFail($id);
-        $tool = Tools::findOrFail($request->tool_id);
+        $tool = tools::findOrFail($request->tool_id);
 
         // LOGIKA PERUBAHAN STOK BERDASARKAN STATUS
         // 1. Jika sebelumnya Pending -> Diubah jadi Disetujui (Stok Berkurang)
         if ($loan->status == 'pending' && $request->status == 'disetujui') {
-            $tool->decrement('stok');
+            $tool->decrement('stok', $request->jumlah ?? 1);
         }
         // 2. Jika sebelumnya Disetujui -> Diubah jadi Kembali (Stok Bertambah)
         elseif ($loan->status == 'disetujui' && $request->status == 'kembali') {
-            $tool->increment('stok');
+            $tool->increment('stok', $loan->jumlah ?? 1);
             $request->merge(['tanggal_kembali_aktual' => now()]);
         }
         // 3. Jika sebelumnya Disetujui -> Diubah jadi Pending/Batal (Stok Bertambah/Koreksi)
         elseif ($loan->status == 'disetujui' && $request->status == 'pending') {
-            $tool->increment('stok');
+            $tool->increment('stok', $loan->jumlah ?? 1);
         }
 
         $loan->update([
             'user_id' => $request->user_id,
             'tool_id' => $request->tool_id,
+            'jumlah' => $request->jumlah,
             'tanggal_pinjam' => $request->tanggal_pinjam,
             'tanggal_kembali_rencana' => $request->tanggal_kembali_rencana,
             'status' => $request->status,

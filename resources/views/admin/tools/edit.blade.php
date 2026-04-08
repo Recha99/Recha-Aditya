@@ -35,7 +35,7 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Jumlah Stok</label>
-                                <input type="number" name="stok" class="form-control @error('stok') is invalid @enderror" value="{{ old('stok', $tool->stok) }}" min="0" required>
+                                <input type="number" name="stok" class="form-control @error('stok') is-invalid @enderror" value="{{ old('stok', $tool->stok) }}" min="0" required>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -52,10 +52,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Deskripsi</label>
-                            <textarea name="deskripsi" class="form-control" rows="3">{{ old('deskripsi', $@auth
-
-
-                            @endauth>deskripsi) }}</textarea>
+                            <textarea name="deskripsi" class="form-control" rows="3">{{ old('deskripsi', $tool->deskripsi) }}</textarea>
                         </div>
 
                         <div class="d-flex justify-content-between">

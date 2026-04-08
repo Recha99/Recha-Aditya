@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Tool;
 use App\Models\tools;
-use App\Models\category;
+use App\Models\Category;
 use App\Models\Loan;
 use App\Models\ActivityLog;
 
@@ -19,8 +19,8 @@ class AdminController extends Controller
         // Mengambil data statistik untuk kartu dashboard
         $totalUser = User::count();
         $totalAlat = tools::count(); // Jumlah jenis alat
-        $totalStok = tools::sum('stock'); // Total fisik seluruh alat
-        $totalKategori = category::count();
+        $totalStok = tools::sum('stok'); // Total fisik seluruh alat
+        $totalKategori = Category::count();
 
 
 

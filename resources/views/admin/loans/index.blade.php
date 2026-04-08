@@ -14,6 +14,7 @@
                     <th>No</th>
                     <th>Peminjam</th>
                     <th>Alat</th>
+                    <th>Jumlah</th>
                     <th>Tanggal Pinjam</th>
                     <th>Status</th>
                     <th>Aksi</th>
@@ -25,6 +26,7 @@
                     <td>{{ $loans->firstItem() + $key }}</td>
                     <td>{{ $loan->user->name }}</td>
                     <td>{{ $loan->tool->nama_alat }}</td>
+                    <td>{{ $loan->jumlah ?? 1 }}</td>
                     <td>
                         {{ $loan->tanggal_pinjam }} <br>
                         <small class="text-muted">Kembali: {{ $loan->tanggal_kembali_rencana }}</small>

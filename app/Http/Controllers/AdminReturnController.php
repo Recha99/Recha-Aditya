@@ -64,9 +64,9 @@ class AdminReturnController extends Controller
             // 'denda' => $request->denda // Jika tabel loans punya kolom denda
         ]);
 
-        // 2. Kembalikan Stok Alat
+        // 2. Kembalikan Stok Alat sesuai jumlah pinjaman
         $tool = tools::findOrFail($loan->tool_id);
-        $tool->increment('stok');
+        $tool->increment('stok', $loan->jumlah ?? 1);
 
         ActivityLog::record('Pengembalian (Admin)', 'Memproses pengembalian alat: ' . $tool->nama_alat);
 

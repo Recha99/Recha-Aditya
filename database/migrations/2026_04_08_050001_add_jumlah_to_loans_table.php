@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
-        $table->id();
-        $table->string('nama_kategori');
-        $table->timestamps();
-    });
-
+        Schema::table('loans', function (Blueprint $table) {
+            $table->integer('jumlah')->default(1)->after('tool_id');
+        });
     }
 
     /**
@@ -24,7 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::table('loans', function (Blueprint $table) {
+            $table->dropColumn('jumlah');
+        });
     }
 };
-

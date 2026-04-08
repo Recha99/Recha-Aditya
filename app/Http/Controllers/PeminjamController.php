@@ -17,21 +17,50 @@ class PeminjamController extends Controller
     }
 
     public function store(Request $request) {
-        // Cek stok dulu
-        $tool = tools::find($request->tool_id);
-        if($tool->stok > 0) {
+        $request->validate([
+            'tanggal_kembali' => 'required|date|after_or_equal:today',
+            'tools' => 'required|array'
+        ]);
+
+        $selectedTools = collect($request->input('tools', []))->filter(function ($item) {
+            return !empty($item['selected']);
+        });
+
+        if ($selectedTools->isEmpty()) {
+            return back()->withErrors(['tools' => 'Pilih minimal satu alat untuk dipinjam.'])->withInput();
+        }
+
+        $loanCount = 0;
+        foreach ($selectedTools as $toolData) {
+            $tool = tools::find($toolData['tool_id'] ?? null);
+            if (!$tool) {
+                return back()->withErrors(['tools' => 'Ada alat yang tidak ditemukan.'])->withInput();
+            }
+
+            $jumlah = intval($toolData['jumlah'] ?? 0);
+            if ($jumlah < 1) {
+                return back()->withErrors(['tools' => 'Jumlah pinjam harus minimal 1 untuk setiap alat yang dipilih.'])->withInput();
+            }
+
+            if ($jumlah > $tool->stok) {
+                return back()->withErrors(['tools' => 'Jumlah pinjam untuk ' . $tool->nama_alat . ' tidak boleh lebih besar dari stok.'])->withInput();
+            }
+
             Loan::create([
                 'user_id' => Auth::id(),
-                'tool_id' => $request->tool_id,
+                'tool_id' => $tool->id,
+                'jumlah' => $jumlah,
                 'tanggal_pinjam' => now(),
                 'tanggal_kembali_rencana' => $request->tanggal_kembali,
                 'status' => 'pending'
             ]);
-            ActivityLog::record('Ajukan Peminjaman', 'Mengajukan peminjaman alat: ' . $tool->nama_alat);
 
-            // Opsional: Kurangi stok langsung atau saat disetujui (tergantung logika bisnis)
-            return back()->with('success', 'Pengajuan berhasil, menunggu persetujuan.');
+            $loanCount++;
         }
+
+        ActivityLog::record('Ajukan Peminjaman', 'Mengajukan peminjaman ' . $loanCount . ' alat sekaligus.');
+
+        return back()->with('success', 'Pengajuan berhasil, menunggu persetujuan.');
     }
 
     public function history() {

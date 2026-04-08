@@ -29,6 +29,11 @@
                 </select>
             </div>
 
+            <div class="mb-3">
+                <label>Jumlah</label>
+                <input type="number" name="jumlah" class="form-control" min="1" value="1" required>
+            </div>
+
             <div class="row mb-3">
                 <div class="col">
                     <label>Tgl Pinjam</label>

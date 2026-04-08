@@ -91,6 +91,11 @@ class ToolController extends Controller
 
         ]);
 
+        // Cek jika mengubah stok dan ada loan aktif, pastikan stok baru cukup
+        if ($request->stok < $tool->loan()->where('status', 'disetujui')->sum('jumlah')) {
+            return back()->withErrors(['stok' => 'Stok tidak bisa dikurangi karena ada alat yang sedang dipinjam.'])->withInput();
+        }
+
         $data = $request->except(['gambar']);
 
         // Handle Ganti Gambar
@@ -115,12 +120,18 @@ class ToolController extends Controller
      */
     public function destroy(tools $tool)
     {
+        // Cek apakah alat ini sedang dipinjam (status pending atau disetujui)
+        if ($tool->loan()->whereIn('status', ['pending', 'disetujui'])->count() > 0) {
+            return back()->withErrors(['error' => 'Alat tidak bisa dihapus karena sedang dalam proses peminjaman atau sudah disetujui.']);
+        }
+
         // Hapus file gambar dari storage jika ada
         if ($tool->gambar && Storage::disk('public')->exists($tool->gambar)) {
             Storage::disk('public')->delete($tool->gambar);
         }
 
         $namaAlat = $tool->nama_alat;
+
         $tool->delete();
 
         ActivityLog::record('Hapus Alat', 'Menghapus alat: ' . $namaAlat);

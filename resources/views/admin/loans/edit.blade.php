@@ -30,6 +30,11 @@
                 </select>
             </div>
 
+            <div class="mb-3">
+                <label>Jumlah</label>
+                <input type="number" name="jumlah" class="form-control" min="1" value="{{ $loan->jumlah ?? 1 }}">
+            </div>
+
             <div class="row mb-3">
                 <div class="col">
                     <label>Tgl Pinjam</label>

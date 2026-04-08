@@ -29,11 +29,21 @@ class PetugasController extends Controller
             'petugas_id' => Auth::id()
         ]);
 
-        // Kurangi stok alat
-        $tool = tools::find($loan->tool_id);
-        $tool->decrement('stok');
+        // Kurangi stok alat sesuai jumlah pinjam
+        $tool = tools::findOrFail($loan->tool_id);
+        $tool->decrement('stok', $loan->jumlah ?? 1);
 
         return back()->with('success', 'Peminjaman disetujui.');
+    }
+
+    public function reject($id) {
+        $loan = Loan::findOrFail($id);
+        $loan->update([
+            'status' => 'ditolak',
+            'petugas_id' => Auth::id()
+        ]);
+
+        return back()->with('success', 'Peminjaman ditolak.');
     }
 
     public function processReturn($id) {
@@ -43,9 +53,9 @@ class PetugasController extends Controller
             'tanggal_kembali_aktual' => now()
         ]);
 
-        // Kembalikan stok
-        $tool = tools::find($loan->tool_id);
-        $tool->increment('stok');
+        // Kembalikan stok sesuai jumlah pinjam
+        $tool = tools::findOrFail($loan->tool_id);
+        $tool->increment('stok', $loan->jumlah ?? 1);
 
         return back()->with('success', 'Alat telah dikembalikan.');
     }

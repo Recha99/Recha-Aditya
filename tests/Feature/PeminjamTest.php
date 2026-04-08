@@ -16,7 +16,7 @@ class PeminjamTest extends TestCase
     public function test_peminjam_can_borrow_tool()
     {
         $peminjam = User::factory()->create(['role' => 'peminjam']);
-        $category = Category::factory()->create(['nama_kategori' => 'Test Category']);
+        $category = Category::factory()->create(['nama_kategori' => 'Test category']);
         $tool = tools::create([
             'nama_alat' => 'Test Tool',
             'category_id' => $category->id,

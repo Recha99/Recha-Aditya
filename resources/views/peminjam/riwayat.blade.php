@@ -8,6 +8,7 @@
             <thead>
                 <tr>
                     <th>Alat</th>
+                    <th>Jumlah</th>
                     <th>Tgl Pinjam</th>
                     <th>Rencana Kembali</th>
                     <th>Status</th>
@@ -18,6 +19,7 @@
                 @forelse($loans as $loan)
                 <tr>
                     <td>{{ $loan->tool->nama_alat }}</td>
+                    <td>{{ $loan->jumlah ?? 1 }}</td>
                     <td>{{ $loan->tanggal_pinjam }}</td>
                     <td>{{ $loan->tanggal_kembali_rencana }}</td>
                     <td>
