@@ -39,10 +39,13 @@
                     </td>
                     <td><span class="badge bg-primary">Sedang Dipinjam</span></td>
                     <td>
-                        <form action="{{ route('admin.returns.store') }}" method="POST">
+                        <form action="{{ route('admin.returns.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="loan_id" value="{{ $loan->id }}">
-
+                            <div class="mb-2">
+                                <input type="file" name="bukti_foto" class="form-control form-control-sm" accept="image/*" required>
+                                <small class="text-muted">Upload bukti foto pengembalian (max 2MB)</small>
+                            </div>
                             <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Konfirmasi: Barang sudah diterima kembali dan kondisi baik?')">
                                 Proses Kembali
                             </button>

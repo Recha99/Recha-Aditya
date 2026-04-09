@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tool;
+
 use App\Models\Category;
 use App\Models\ActivityLog; // Menggunakan Log Yang kita buat sebelumnya
 use App\Models\tools;
@@ -120,9 +120,9 @@ class ToolController extends Controller
      */
     public function destroy(tools $tool)
     {
-        // Cek apakah alat ini sedang dipinjam (status pending atau disetujui)
-        if ($tool->loan()->whereIn('status', ['pending', 'disetujui'])->count() > 0) {
-            return back()->withErrors(['error' => 'Alat tidak bisa dihapus karena sedang dalam proses peminjaman atau sudah disetujui.']);
+        // Cek apakah alat ini memiliki riwayat peminjaman karena ada foreign key constraint di tabel loans
+        if ($tool->loan()->exists()) {
+            return back()->withErrors(['error' => 'Alat tidak bisa dihapus karena memiliki riwayat peminjaman. Hapus data peminjaman terkait terlebih dahulu.']);
         }
 
         // Hapus file gambar dari storage jika ada

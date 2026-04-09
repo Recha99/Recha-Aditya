@@ -25,8 +25,8 @@
                         <label>Role (Hak Akses)</label>
                         <select name="role" class="form-select @error('role') is-invalid @enderror"required>
                             <option value="">-- Pilih Role --</option>
-                            <option value="peminjam" {{ old('role') == 'peminjam' ? 'selected' : ''}}>Peminjam (Siswa/Guru)</option>
-                            <option value="petugas" {{ old('role') == 'petugas' ? 'selected' : ''}}>Petugas Lab</option>
+                            <option value="peminjam" {{ old('role') == 'peminjam' ? 'selected' : ''}}>Peminjam</option>
+                            <option value="petugas" {{ old('role') == 'petugas' ? 'selected' : ''}}>Petugas</option>
                             <option value="admin" {{ old('role') == 'admin' ? 'selected' : ''}}>Administrator</option>
                         </select>
                         @error('role') <div class="invalid-feedback">{{ $message }}</div> @enderror

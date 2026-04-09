@@ -21,19 +21,18 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            //Redirect berdasarkan role
-            if (Auth::check() && Auth::user()->role == 'admin') {
+            ActivityLog::record('login', 'Pengguna Melakukan Login');
+
+            // Redirect berdasarkan role
+            if (Auth::user()->role == 'admin') {
                 return redirect('/admin/dashboard');
-            }
-            if (Auth::check() && Auth::user()->role == 'petugas') {
+            } elseif (Auth::user()->role == 'petugas') {
                 return redirect('/petugas/dashboard');
+            } else {
+                return redirect('/peminjam/dashboard');
             }
-            if (Auth::attempt($credentials)) {
-                ActivityLog::record('login', 'Pengguna Melakukan Login');
-                $request->session()->regenerate();
-            }
-            return redirect('/peminjam/dashboard');
         }
+
         return back()->withErrors(['email' => 'Login Gagal']);
     }
     public function logout(Request $request) {

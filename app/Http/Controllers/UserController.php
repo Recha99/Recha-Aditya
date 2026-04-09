@@ -110,6 +110,11 @@ class UserController extends Controller
             return back()->withErrors(['error' => 'Anda tidak dapat menghapus akun Anda sendiri saat sedang login.']);
         }
 
+        // Cek apakah user memiliki riwayat peminjaman (sebagai peminjam atau petugas)
+        if ($user->loans()->exists() || $user->approvedLoans()->exists()) {
+            return back()->withErrors(['error' => 'User tidak bisa dihapus karena memiliki riwayat peminjaman. Hapus data peminjaman terkait terlebih dahulu.']);
+        }
+
         $nama = $user->name;
         $user->delete();
 

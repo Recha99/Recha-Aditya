@@ -47,4 +47,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function loans()
+    {
+        return $this->hasMany(loan::class, 'user_id');
+    }
+
+    public function approvedLoans()
+    {
+        return $this->hasMany(loan::class, 'petugas_id');
+    }
 }

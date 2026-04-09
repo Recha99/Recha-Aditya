@@ -18,7 +18,9 @@
                     <th>Alat</th>
                     <th>Tgl Pinjam</th>
                     <th>Tgl Kembali (Aktual)</th>
-                    <th>Petugas</th> <th>Aksi</th>
+                    <th>Petugas</th>
+                    <th>Bukti Foto</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -39,6 +41,13 @@
                     </td>
                     <td>{{ $r->petugas ? $r->petugas->name : 'Admin' }}</td>
                     <td>
+                        @if($r->bukti_foto)
+                            <img src="{{ asset('storage/' . $r->bukti_foto) }}" alt="Bukti Pengembalian" class="img-thumbnail" style="height: 60px;">
+                        @else
+                            <span class="text-muted">Tidak ada</span>
+                        @endif
+                    </td>
+                    <td>
                         <a href="{{ route('admin.returns.edit', $r->id) }}" class="btn btn-warning btn sm">Edit</a>
 
                         <form action="{{ route('admin.returns.destroy', $r->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus riwayat ini?');">
@@ -49,7 +58,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="7" class="text-center">Belum ada data pengembalian.</td></tr>
+                <tr><td colspan="8" class="text-center">Belum ada data pengembalian.</td></tr>
                 @endforelse
             </tbody>
         </table>

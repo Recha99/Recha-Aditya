@@ -66,8 +66,12 @@
                     <td>{{ $active->jumlah ?? 1 }}</td>
                     <td><span class="badge bg-primary">{{ $active->status }}</span></td>
                     <td>
-                        <form action="{{ url('/petugas/return/'.$active->id) }}" method="POST">
+                        <form action="{{ url('/petugas/return/'.$active->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
+                            <div class="mb-2">
+                                <input type="file" name="bukti_foto" class="form-control form-control-sm" accept="image/*" required>
+                                <small class="text-muted">Upload bukti foto pengembalian (max 2MB)</small>
+                            </div>
                             <button class="btn btn-primary btn-sm">Proses Pengembalian</button>
                         </form>
                     </td>
@@ -88,6 +92,7 @@
                     <th>Peminjam</th>
                     <th>Alat</th>
                     <th>Status</th>
+                    <th>Bukti Foto</th>
                 </tr>
 
 
@@ -98,6 +103,13 @@
                     <td>{{ $sudah->user->name }}</td>
                     <td>{{ $sudah->tool->nama_alat }}</td>
                     <td><span class="badge bg-primary">{{ $sudah->status }}</span></td>
+                    <td>
+                        @if($sudah->bukti_foto)
+                            <img src="{{ asset('storage/' . $sudah->bukti_foto) }}" alt="Bukti Pengembalian" class="img-thumbnail" style="height: 60px;">
+                        @else
+                            <span class="text-muted">Tidak ada</span>
+                        @endif
+                    </td>
                 </tr>
                 @endforeach
             </tbody>

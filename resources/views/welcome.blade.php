@@ -11,15 +11,16 @@
             url('https://source.unsplash.com/1600x900/?laboratory,workshop');
             background-size: cover;
             background-position: center;
-            color: white;
+            color: rgb(255, 255, 255);
             padding: 100px 0;
             border-radius: 0 0 20px 20px;
         }
         .feature-icon {
-            font-size: 2rem;
-            color: #0d6efd;
-            margin-bottom: 1rem;
+            font-size: 3rem;
+            margin-bottom: 20px;
         }
+
+
     </style>
 </head>
 <body class="bg-light">
@@ -46,7 +47,7 @@
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm border-0 py-4">
                     <div class="card-body">
-                        <div class="feature-icon">   </div>
+                        <div class="feature-icon">🔍</div>
                         <h4 class="card-title">Cari Alat</h4>
                         <p class="card-text text-muted">Cek ketersediaan stok alat secara real-time tanpa perlu bolak-balik ke ruang penyimpanan.</p>
                     </div>
@@ -55,18 +56,16 @@
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm border-0 py-4">
                     <div class="card-body">
-                        <div class="feature-icon">   </div>
+                        <div class="feature-icon">📝</div>
                         <h4 class="card-title">Ajukan Pinjaman</h4>
                         <p class="card-text text-muted">Proses pengajuan peminjaman yang praktis melalui sistem dan persetujuan petugas yang cepat.</p>
-
-
                     </div>
                 </div>
             </div>
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm border-0 py-4">
                     <div class="card-body">
-                        <div class="feature-icon">   </div>
+                        <div class="feature-icon">📦</div>
                         <h4 class="card-title">Pengembalian</h4>
                         <p class="card-text text-muted">Sistem monitoring pengembalian alat yang terstruktur untuk menghindari kehilangan aset.</p>
                     </div>

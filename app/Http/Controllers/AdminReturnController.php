@@ -7,6 +7,7 @@ use App\Models\Loan;
 use App\Models\Tool;
 use App\Models\ActivityLog;
 use App\Models\tools;
+use Illuminate\Support\Facades\Storage;
 
 class AdminReturnController extends Controller
 {
@@ -48,6 +49,7 @@ class AdminReturnController extends Controller
     {
         $request->validate([
             'loan_id' => 'required|exists:loans,id',
+            'bukti_foto' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Max 2MB
             'denda' => 'nullable|integer' // Opsional jika mau ada denda
         ]);
 
@@ -57,10 +59,17 @@ class AdminReturnController extends Controller
             return back()->with('error', 'Data tidak valid atau sudah dikembalikan.');
         }
 
+        // Handle upload bukti foto
+        $buktiPath = null;
+        if ($request->hasFile('bukti_foto')) {
+            $buktiPath = $request->file('bukti_foto')->store('bukti_pengembalian', 'public');
+        }
+
         // 1. Update Status & Tanggal
         $loan->update([
             'status' => 'kembali',
             'tanggal_kembali_aktual' => now(),
+            'bukti_foto' => $buktiPath,
             // 'denda' => $request->denda // Jika tabel loans punya kolom denda
         ]);
 
@@ -70,7 +79,7 @@ class AdminReturnController extends Controller
 
         ActivityLog::record('Pengembalian (Admin)', 'Memproses pengembalian alat: ' . $tool->nama_alat);
 
-        return redirect()->route('admin.returns.index')->with('success', 'Alat berhasil dikembalikan.');
+        return redirect()->route('admin.returns.index')->with('success', 'Alat berhasil dikembalikan dengan bukti foto.');
     }
 
     /**

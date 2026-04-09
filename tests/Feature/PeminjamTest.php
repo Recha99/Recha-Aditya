@@ -25,8 +25,14 @@ class PeminjamTest extends TestCase
         ]);
 
         $response = $this->actingAs($peminjam)->post('/peminjam/ajukan', [
-            'tool_id' => $tool->id,
-            'tanggal_kembali' => now()->addDays(7)->format('Y-m-d')
+            'tanggal_kembali' => now()->addDays(7)->format('Y-m-d'),
+            'tools' => [
+                [
+                    'selected' => '1',
+                    'tool_id' => $tool->id,
+                    'jumlah' => 1
+                ]
+            ]
         ]);
 
         $response->assertRedirect();

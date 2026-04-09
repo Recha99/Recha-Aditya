@@ -10,7 +10,7 @@
             <div class="mb-3">
                 <label>Pilih Peminjam</label>
                 <select name="user_id" class="form-select" required>
-                    <option value="">-- Pilih Siswa --</option>
+                    <option value="">-- Pilih User --</option>
                     @foreach($users as $user)
                         <option value="{{ $user->id }}">{{ $user->name }}</option>
 

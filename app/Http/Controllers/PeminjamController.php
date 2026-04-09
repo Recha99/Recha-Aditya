@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
 use App\Models\Loan;
-use App\Models\Tool;
 use App\Models\tools;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -50,7 +49,7 @@ class PeminjamController extends Controller
                 'user_id' => Auth::id(),
                 'tool_id' => $tool->id,
                 'jumlah' => $jumlah,
-                'tanggal_pinjam' => now(),
+                'tanggal_pinjam' => now() ->toDateString(),
                 'tanggal_kembali_rencana' => $request->tanggal_kembali,
                 'status' => 'pending'
             ]);
@@ -61,6 +60,28 @@ class PeminjamController extends Controller
         ActivityLog::record('Ajukan Peminjaman', 'Mengajukan peminjaman ' . $loanCount . ' alat sekaligus.');
 
         return back()->with('success', 'Pengajuan berhasil, menunggu persetujuan.');
+    }
+
+    public function returnProsess(Request $request, $id) {
+        $data = Loan::find($id);
+        $tgl_kembali = now(); // Tanggal aktual pengembalian
+
+        // Logika Denda
+        $selisih = $data->tanggal_kembali_rencana->diffInDays($tgl_kembali, false); // Selisih hari, negatif jika terlambat
+        $denda = 0;
+
+        if ($selisih < 0) { // Jika terlambat
+            $hari_terlambat = abs($selisih);
+            if ($hari_terlambat > 2) {
+                $denda = $hari_terlambat * 5000; // Denda per hari terlambat
+            }
+        }
+
+        $data->update([
+            'tanggal_kembali_aktual' => $tgl_kembali,
+            'total_denda' => $denda,
+            'status' => 'kembali'
+        ]);
     }
 
     public function history() {
