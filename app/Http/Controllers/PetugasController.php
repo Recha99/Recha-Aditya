@@ -64,7 +64,7 @@ class PetugasController extends Controller
 
         // Logika Denda
         $selisih = $loan->tanggal_kembali_rencana->diffInDays($tgl_kembali, false); // Selisih hari, negatif jika terlambat
-        $denda = 0;
+        $denda = 5000; // Denda dasar
 
         if ($selisih < 0) { // Jika terlambat
             $hari_terlambat = abs($selisih);

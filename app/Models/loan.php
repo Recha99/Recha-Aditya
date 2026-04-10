@@ -23,4 +23,10 @@ class loan extends Model
             {
                 return $this->belongsTo(User::class, 'petugas_id');
             }
+
+    protected $casts = [
+        'tanggal_pinjam' => 'date',
+        'tanggal_kembali_rencana' => 'date',
+        'tanggal_kembali' => 'date',
+    ];
 }

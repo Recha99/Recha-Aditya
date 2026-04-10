@@ -43,7 +43,7 @@
     <div class="mt-5 text-end">
         <p>Cimahi, {{ date('d F Y') }}</p>
         <br><br>
-        <p>( Petugas Lab )</p>
+        <p>( Petugas )</p>
     </div>
 </body>
 </html>

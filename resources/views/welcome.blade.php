@@ -15,10 +15,12 @@
             padding: 100px 0;
             border-radius: 0 0 20px 20px;
         }
+
         .feature-icon {
             font-size: 3rem;
             margin-bottom: 20px;
         }
+
 
 
     </style>
