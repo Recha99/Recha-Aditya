@@ -11,8 +11,10 @@ use Illuminate\Support\Facades\Auth;
 class PeminjamController extends Controller
 {
     public function index() {
-        $tools = tools::with('category')->get();
-        return view('peminjam.dashboard', compact('tools'));
+        $categories = \App\Models\Category::with(['tools' => function($q) {
+            $q->orderBy('nama_alat');
+        }])->orderBy('nama_kategori')->get();
+        return view('peminjam.dashboard', compact('categories'));
     }
 
     public function store(Request $request) {
