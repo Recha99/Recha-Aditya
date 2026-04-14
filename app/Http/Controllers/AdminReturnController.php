@@ -20,7 +20,7 @@ class AdminReturnController extends Controller
         // Ambil hanya yang statusnya 'kembali'
         $returns = Loan::with(['user', 'tool'])
                     ->where('status', 'kembali')
-                    ->latest('tanggal_kembali_aktual')
+                    ->latest()
                     ->paginate(10);
 
         return view('admin.returns.index', compact('returns'));
@@ -67,20 +67,26 @@ class AdminReturnController extends Controller
 
         $tanggalKembaliAktual = now();
 
+        // Hitung denda keterlambatan (toleransi 2 hari, denda Rp5.000/hari)
+        $dueDate = Carbon::parse($loan->tanggal_kembali_rencana)->addDays(2);
+        $daysLate = $tanggalKembaliAktual->gt($dueDate) ? $tanggalKembaliAktual->diffInDays($dueDate) : 0;
+        $totalDenda = $daysLate * 5000;
+
         // 1. Update Status & Tanggal
         $loan->update([
             'status' => 'kembali',
             'tanggal_kembali_aktual' => $tanggalKembaliAktual,
             'bukti_foto' => $buktiPath,
+            'total_denda' => $totalDenda,
         ]);
 
         // 2. Kembalikan Stok Alat sesuai jumlah pinjaman
         $tool = tools::findOrFail($loan->tool_id);
         $tool->increment('stok', $loan->jumlah ?? 1);
 
-        ActivityLog::record('Pengembalian (Admin)', 'Memproses pengembalian alat: ' . $tool->nama_alat);
+        ActivityLog::record('Pengembalian (Admin)', 'Memproses pengembalian alat: ' . $tool->nama_alat . ' dengan denda: Rp ' . number_format($totalDenda));
 
-        return redirect()->route('admin.returns.index')->with('success', 'Alat berhasil dikembalikan dengan bukti foto.');
+        return redirect()->route('admin.returns.index')->with('success', 'Alat berhasil dikembalikan. Denda: Rp ' . number_format($totalDenda));
     }
 
     /**
@@ -111,8 +117,14 @@ class AdminReturnController extends Controller
 
         $tanggalKembaliAktual = Carbon::parse($request->tanggal_kembali_aktual);
 
+        // Hitung ulang denda berdasarkan tanggal baru (toleransi 2 hari, denda Rp5.000/hari)
+        $dueDate = Carbon::parse($loan->tanggal_kembali_rencana)->addDays(2);
+        $daysLate = $tanggalKembaliAktual->gt($dueDate) ? $tanggalKembaliAktual->diffInDays($dueDate) : 0;
+        $totalDenda = $daysLate * 5000;
+
         $loan->update([
             'tanggal_kembali_aktual' => $tanggalKembaliAktual,
+            'total_denda' => $totalDenda,
         ]);
 
         return redirect()->route('admin.returns.index')->with('success', 'Data pengembalian diperbarui.');

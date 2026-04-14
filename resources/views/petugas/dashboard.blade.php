@@ -210,6 +210,7 @@
                                 <th>Jumlah</th>
                                 <th>Tgl Pinjam</th>
                                 <th>Tgl Kembali</th>
+                                <th>Denda</th>
                                 <th>Bukti Foto</th>
                             </tr>
                         </thead>
@@ -220,7 +221,21 @@
                                 <td>{{ $loan->tool->nama_alat }}</td>
                                 <td>{{ $loan->jumlah ?? 1 }}</td>
                                 <td>{{ $loan->tanggal_pinjam }}</td>
-                                <td>{{ $loan->tanggal_kembali_aktual }}</td>
+                                <td>
+                                    {{ $loan->tanggal_kembali_aktual }}
+                                    @if($loan->tanggal_kembali_aktual > $loan->tanggal_kembali_rencana)
+                                        <span class="badge bg-danger">Telat</span>
+                                    @else
+                                        <span class="badge bg-success">Tepat Waktu</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($loan->total_denda > 0)
+                                        <span class="badge bg-danger">Rp {{ number_format($loan->total_denda) }}</span>
+                                    @else
+                                        <span class="text-success">-</span>
+                                    @endif
+                                </td>
                                 <td>
                                     @if($loan->bukti_foto)
                                         <a href="{{ asset('storage/' . $loan->bukti_foto) }}" target="_blank" class="btn btn-sm btn-info">Lihat Bukti</a>

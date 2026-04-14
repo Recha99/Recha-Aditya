@@ -38,7 +38,7 @@
                         @endif
                     </td>
                     <td>
-                        @if($r->total_denda > 0)
+                        @if($r->total_denda < 0)
                             <span class="badge bg-danger">Rp {{ number_format($r->total_denda) }}</span>
                         @else
                             <span class="text-success">-</span>

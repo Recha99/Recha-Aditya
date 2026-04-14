@@ -22,7 +22,7 @@ class PetugasController extends Controller
         // Data yang menunggu konfirmasi pengembalian
         $waitingConfirmation = Loan::where('status', 'menunggu_konfirmasi')->with(['user', 'tool'])->get();
 
-        $sudahDikembalikan = Loan::where('status', 'kembali')->with(['user', 'tool'])->get();
+        $sudahDikembalikan = Loan::where('status', 'kembali')->with(['user', 'tool'])->latest()->get();
 
         return view('petugas.dashboard', compact('loans', 'activeLoans', 'waitingConfirmation', 'sudahDikembalikan'));
     }
