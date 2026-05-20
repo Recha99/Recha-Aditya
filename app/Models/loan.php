@@ -27,6 +27,6 @@ class loan extends Model
     protected $casts = [
         'tanggal_pinjam' => 'date',
         'tanggal_kembali_rencana' => 'date',
-        'tanggal_kembali' => 'date',
+        'tanggal_kembali_aktual' => 'date',
     ];
 }

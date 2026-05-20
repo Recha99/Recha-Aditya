@@ -3,7 +3,6 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3>Kelola Data Peminjaman (Admin)</h3>
-    <a href="{{ route('admin.loans.create') }}" class="btn btn-primary">+ Tambah Peminjaman Manual</a>
 </div>
 
 <div class="card">

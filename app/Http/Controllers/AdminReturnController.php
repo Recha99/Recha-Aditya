@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Loan;
 use App\Models\Tool;
@@ -50,7 +51,6 @@ class AdminReturnController extends Controller
         $request->validate([
             'loan_id' => 'required|exists:loans,id',
             'bukti_foto' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Max 2MB
-            'denda' => 'nullable|integer' // Opsional jika mau ada denda
         ]);
 
         $loan = Loan::findOrFail($request->loan_id);
@@ -65,12 +65,13 @@ class AdminReturnController extends Controller
             $buktiPath = $request->file('bukti_foto')->store('bukti_pengembalian', 'public');
         }
 
+        $tanggalKembaliAktual = now();
+
         // 1. Update Status & Tanggal
         $loan->update([
             'status' => 'kembali',
-            'tanggal_kembali_aktual' => now(),
+            'tanggal_kembali_aktual' => $tanggalKembaliAktual,
             'bukti_foto' => $buktiPath,
-            // 'denda' => $request->denda // Jika tabel loans punya kolom denda
         ]);
 
         // 2. Kembalikan Stok Alat sesuai jumlah pinjaman
@@ -108,8 +109,10 @@ class AdminReturnController extends Controller
             'tanggal_kembali_aktual' => 'required|date'
         ]);
 
+        $tanggalKembaliAktual = Carbon::parse($request->tanggal_kembali_aktual);
+
         $loan->update([
-            'tanggal_kembali_aktual' => $request->tanggal_kembali_aktual
+            'tanggal_kembali_aktual' => $tanggalKembaliAktual,
         ]);
 
         return redirect()->route('admin.returns.index')->with('success', 'Data pengembalian diperbarui.');

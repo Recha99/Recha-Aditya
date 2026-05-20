@@ -30,6 +30,8 @@ Route::get('/', function () {
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Group Admin (CRUD User, Alat, Kategori, Log)
@@ -49,11 +51,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // Group Petugas (Approval, Memantau, Laporan)
 Route::middleware(['auth', 'role:petugas'])->group(function () {
-    Route::get('/petugas/dashboard', [PetugasController::class, 'index']);
-    Route::post('/petugas/approve/{id}', [PetugasController::class, 'approve']); // Menyetujui
-    Route::post('/petugas/reject/{id}', [PetugasController::class, 'reject']); // Menolak
-    Route::post('/petugas/return/{id}', [PetugasController::class, 'processReturn']); // Pengembalian
-    Route::get('/petugas/laporan', [PetugasController::class, 'report']); // Cetak Laporan
+    Route::get('/petugas/dashboard', [PetugasController::class, 'index'])->name('petugas.dashboard');
+    Route::post('/petugas/approve/{id}', [PetugasController::class, 'approve'])->name('petugas.approve');
+    Route::post('/petugas/reject/{id}', [PetugasController::class, 'reject'])->name('petugas.reject');
+    Route::get('/petugas/return/{id}', [PetugasController::class, 'showReturnForm'])->name('petugas.return.form');
+    Route::post('/petugas/return/{id}', [PetugasController::class, 'processReturn'])->name('petugas.return.process');
+    Route::post('/petugas/confirm-return/{id}', [PetugasController::class, 'confirmReturn'])->name('petugas.confirm.return');
+    Route::get('/petugas/laporan', [PetugasController::class, 'report'])->name('petugas.report');
 });
 
 // Group Peminjam (Lihat alat, Ajukan pinjam)
@@ -61,4 +65,5 @@ Route::middleware(['auth', 'role:peminjam'])->group(function () {
     Route::get('/peminjam/dashboard', [PeminjamController::class, 'index']); // Daftar Alat
     Route::post('/peminjam/ajukan', [PeminjamController::class, 'store']); // Mengajukan
     Route::get('/peminjam/riwayat', [PeminjamController::class, 'history']); // Riwayat & Kembalikan
+    Route::post('/peminjam/return/{id}', [PeminjamController::class, 'returnProsess'])->name('peminjam.return');
 });

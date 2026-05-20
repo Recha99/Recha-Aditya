@@ -17,6 +17,8 @@
                                 <input type="password" name="password" class="form-control" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Masuk</button>
+                            <div class="mt-3 text-center">
+                                <a href="{{ route('register') }}">Belum punya akun? Daftar</a>
                         </form>
                     </div>
                 </div>

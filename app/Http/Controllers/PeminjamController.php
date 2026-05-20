@@ -63,25 +63,20 @@ class PeminjamController extends Controller
     }
 
     public function returnProsess(Request $request, $id) {
-        $data = Loan::find($id);
-        $tgl_kembali = now(); // Tanggal aktual pengembalian
+        $loan = Loan::findOrFail($id);
 
-        // Logika Denda
-        $selisih = $data->tanggal_kembali_rencana->diffInDays($tgl_kembali, false); // Selisih hari, negatif jika terlambat
-        $denda = 0;
-
-        if ($selisih < 0) { // Jika terlambat
-            $hari_terlambat = abs($selisih);
-            if ($hari_terlambat > 2) {
-                $denda = $hari_terlambat * 5000; // Denda per hari terlambat
-            }
+        // Pastikan loan milik user dan status diperbolehkan
+        if ($loan->user_id != Auth::id() || $loan->status != 'disetujui') {
+            return back()->with('error', 'Tidak dapat mengajukan pengembalian.');
         }
 
-        $data->update([
-            'tanggal_kembali_aktual' => $tgl_kembali,
-            'total_denda' => $denda,
-            'status' => 'kembali'
+        $loan->update([
+            'status' => 'menunggu_konfirmasi'
         ]);
+
+        ActivityLog::record('Ajukan Pengembalian', 'Mengajukan pengembalian alat: ' . $loan->tool->nama_alat);
+
+        return back()->with('success', 'Pengajuan pengembalian berhasil, menunggu konfirmasi petugas.');
     }
 
     public function history() {

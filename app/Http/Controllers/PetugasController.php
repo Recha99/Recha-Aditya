@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Loan;
 use App\Models\Tool;
 use App\Models\tools;
@@ -18,9 +19,12 @@ class PetugasController extends Controller
         // Data yang statusnya disetujui (sedang dipinjam)
         $activeLoans = Loan::where('status', 'disetujui')->with(['user', 'tool'])->get();
 
+        // Data yang menunggu konfirmasi pengembalian
+        $waitingConfirmation = Loan::where('status', 'menunggu_konfirmasi')->with(['user', 'tool'])->get();
+
         $sudahDikembalikan = Loan::where('status', 'kembali')->with(['user', 'tool'])->get();
 
-        return view('petugas.dashboard', compact('loans', 'activeLoans', 'sudahDikembalikan'));
+        return view('petugas.dashboard', compact('loans', 'activeLoans', 'waitingConfirmation', 'sudahDikembalikan'));
     }
 
     public function approve($id) {
@@ -34,15 +38,20 @@ class PetugasController extends Controller
         $tool = tools::findOrFail($loan->tool_id);
         $tool->decrement('stok', $loan->jumlah ?? 1);
 
+        ActivityLog::record('Approve Loan', 'Menyetujui peminjaman alat: ' . $tool->nama_alat);
+
         return back()->with('success', 'Peminjaman disetujui.');
     }
 
     public function reject($id) {
         $loan = Loan::findOrFail($id);
+        $tool = tools::findOrFail($loan->tool_id);
         $loan->update([
             'status' => 'ditolak',
             'petugas_id' => Auth::id()
         ]);
+
+        ActivityLog::record('Reject Loan', 'Menolak peminjaman alat: ' . $tool->nama_alat);
 
         return back()->with('success', 'Peminjaman ditolak.');
     }
@@ -54,37 +63,60 @@ class PetugasController extends Controller
 
         $loan = Loan::findOrFail($id);
 
-        // Handle upload bukti foto
-        $buktiPath = null;
-        if ($request->hasFile('bukti_foto')) {
-            $buktiPath = $request->file('bukti_foto')->store('bukti_pengembalian', 'public');
+        if ($loan->status !== 'menunggu_konfirmasi') {
+            return back()->with('error', 'Status peminjaman tidak valid untuk proses pengembalian.');
         }
 
-        $tgl_kembali = now();
-
-        // Logika Denda
-        $selisih = $loan->tanggal_kembali_rencana->diffInDays($tgl_kembali, false); // Selisih hari, negatif jika terlambat
-        $denda = 5000; // Denda dasar
-
-        if ($selisih < 0) { // Jika terlambat
-            $hari_terlambat = abs($selisih);
-            if ($hari_terlambat > 2) {
-                $denda = $hari_terlambat * 5000; // Denda per hari terlambat
-            }
-        }
+        $buktiPath = $request->file('bukti_foto')->store('bukti_pengembalian', 'public');
+        $confirmationDate = now();
+        $dueDate = $loan->tanggal_kembali_rencana->copy()->addDays(2);
+        $daysLate = $confirmationDate->gt($dueDate) ? $confirmationDate->diffInDays($dueDate) : 0;
+        $finePerDay = 5000;
+        $totalFine = $daysLate * $finePerDay;
 
         $loan->update([
             'status' => 'kembali',
-            'tanggal_kembali_aktual' => $tgl_kembali,
+            'tanggal_kembali_aktual' => $confirmationDate,
+            'petugas_id' => Auth::id(),
             'bukti_foto' => $buktiPath,
-            'total_denda' => $denda
+            'total_denda' => $totalFine
+        ]);
+
+        $tool = tools::findOrFail($loan->tool_id);
+        $tool->increment('stok', $loan->jumlah ?? 1);
+
+        ActivityLog::record('Process Return', 'Memproses pengembalian alat: ' . $tool->nama_alat . ' dengan denda: Rp ' . number_format($totalFine));
+
+        return back()->with('success', 'Alat telah dikembalikan dengan bukti foto. Denda: Rp ' . number_format($totalFine));
+    }
+
+    public function confirmReturn($id) {
+        $loan = Loan::findOrFail($id);
+
+        if ($loan->status !== 'menunggu_konfirmasi') {
+            return back()->with('error', 'Status peminjaman tidak valid untuk konfirmasi.');
+        }
+
+        $confirmationDate = now();
+        $dueDate = $loan->tanggal_kembali_rencana->addDays(2);
+        $daysLate = $confirmationDate->gt($dueDate) ? $confirmationDate->diffInDays($dueDate) : 0;
+        $finePerDay = 5000; // Denda per hari terlambat
+        $totalFine = $daysLate * $finePerDay;
+
+        $loan->update([
+            'status' => 'kembali',
+            'tanggal_kembali_aktual' => $confirmationDate,
+            'petugas_id' => Auth::id(),
+            'total_denda' => $totalFine
         ]);
 
         // Kembalikan stok sesuai jumlah pinjam
         $tool = tools::findOrFail($loan->tool_id);
         $tool->increment('stok', $loan->jumlah ?? 1);
 
-        return back()->with('success', 'Alat telah dikembalikan dengan bukti foto. Denda: Rp ' . number_format($denda, 0, ',', '.'));
+        ActivityLog::record('Confirm Return', 'Mengkonfirmasi pengembalian alat: ' . $tool->nama_alat . ' dengan denda: ' . number_format($totalFine));
+
+        return back()->with('success', 'Pengembalian alat telah dikonfirmasi. Denda: Rp ' . number_format($totalFine));
     }
 
     public function report(Request $request) {

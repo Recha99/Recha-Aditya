@@ -14,6 +14,7 @@ class ActivityLog extends Model
 
     //fungsi Helper
     public static function record($action, $desc = null) {
+        if (!Auth::check()) return; // cegah error jika tidak ada user yang login (misal saat seeding)
         self::create([
             'user_id' => Auth::id(),
             'action' => $action,
@@ -21,4 +22,13 @@ class ActivityLog extends Model
         ]);
     }
 
+    public static function recordWithUser($userId, $action, $desc = null) {
+        self::create([
+            'user_id' => $userId,
+            'action' => $action,
+            'description' => $desc,
+        ]);
+    }
+
 }
+

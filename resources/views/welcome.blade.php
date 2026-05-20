@@ -31,6 +31,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">SIPINJAM</a>
             <div class="ms-auto">
+                <a href="{{ route('register') }}" class="btn btn-outline-light me-2 px-4">Register</a>
                 <a href="{{ route('login') }}" class="btn btn-primary px-4">Login</a>
             </div>
         </div>
@@ -40,7 +41,8 @@
         <div class="container">
             <h1 class="display-4 fw-bold">Peminjaman Alat Jadi Lebih Mudah</h1>
             <p class="lead mb-4">Sistem manajemen peminjaman alat perkebunan yang terintegrasi, cepat, dan transparan.</p>
-            <a href="{{ route('login') }}" class="btn btn-lg btn-warning fw-bold px-5">Mulai Peminjaman</a>
+            <a href="{{ route('register') }}" class="btn btn-lg btn-warning fw-bold px-5 me-3">Daftar Sekarang</a>
+            <a href="{{ route('login') }}" class="btn btn-lg btn-outline-light fw-bold px-5">Mulai Peminjaman</a>
         </div>
     </div>
 
